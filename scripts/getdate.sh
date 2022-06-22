@@ -355,19 +355,28 @@ gettar(){
 	#设置更新地址
 	[ -n "$url" ] && setconfig update_url $url
 	#设置环境变量	
-	[ -w /opt/etc/profile ] && profile=/opt/etc/profile
-	[ -w /jffs/configs/profile.add ] && profile=/jffs/configs/profile.add
-	[ -w ~/.bashrc ] && profile=~/.bashrc
-	[ -w /etc/profile ] && profile=/etc/profile
-	if [ -n "$profile" ];then
-		sed -i '/alias clash=*/'d $profile
-		echo "alias clash=\"$shtype $clashdir/clash.sh\"" >> $profile #设置快捷命令环境变量
-		sed -i '/export clashdir=*/'d $profile
-		echo "export clashdir=\"$clashdir\"" >> $profile #设置clash路径环境变量
-	else
-		echo 无法写入环境变量！请检查安装权限！
-		exit 1
-	fi
+	profile_path=''
+	setEnvToProfile(){
+		for i in $* ; do
+			[ ! -w $i ] && continue;
+			if [ -n "$i" ];then
+				sed -i '/alias clash=*/'d $i
+				echo "alias clash=\"$shtype $clashdir/clash.sh\"" >> $i #设置快捷命令环境变量
+				sed -i '/export clashdir=*/'d $i
+				echo "export clashdir=\"$clashdir\"" >> $i #设置clash路径环境变量
+				profile_path="$profile_path:$i"
+				profile=$i
+			else
+				echo 无法写入环境变量！请检查安装权限！
+				exit 1
+			fi
+		done
+		# 删除字符串开头的:
+		profile_path=$(echo "$profile_path" | grep -q -e '^:.*' && echo "$profile_path" | sed 's/^://' || echo "$profile_path")
+	}
+	setEnvToProfile /opt/etc/profile /jffs/configs/profile.add ~/.zshrc ~/.bashrc /etc/profile
+	# 将 profile 写入的环境变量文件记录起来，方便卸载时候清理
+	[ -n "$profilePath" ] && setconfig profilePath "${profile_path}"
 	#华硕/Padavan额外设置
 	[ -n "$initdir" ] && {
 		sed -i '/ShellClash初始化/'d $initdir && touch $initdir && echo "$clashdir/start.sh init #ShellClash初始化脚本" >> $initdir

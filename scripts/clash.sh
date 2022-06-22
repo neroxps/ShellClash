@@ -1600,12 +1600,13 @@ case "$1" in
 			$clashdir/start.sh cronset "clash服务"
 			$clashdir/start.sh cronset "订阅链接"
 			$clashdir/start.sh cronset "ShellClash初始化"
-			[ -w ~/.bashrc ] && profile=~/.bashrc
-			[ -w /etc/profile ] && profile=/etc/profile
-			sed -i '/alias clash=*/'d $profile
-			sed -i '/export clashdir=*/'d $profile
-			sed -i '/all_proxy/'d $profile
-			sed -i '/ALL_PROXY/'d $profile
+			profilePath=$(cat $clashdir/mark | grep 'profilePath=' | awk -F'=' '{print $2}' | sed 's/:/ /g')
+			for i in $profilePath; do
+				sed -i '/alias clash=*/'d $i 2>/dev/null
+				sed -i '/export clashdir=*/'d $i 2>/dev/null
+				sed -i '/all_proxy/'d $i 2>/dev/null
+				sed -i '/ALL_PROXY/'d $i 2>/dev/null
+			done
 			sed -i "/启用外网访问SSH服务/d" /etc/firewall.user
 			sed -i '/ShellClash初始化/'d /etc/storage/started_script.sh 2>/dev/null
 			sed -i '/ShellClash初始化/'d /jffs/.asusrouter 2>/dev/null
