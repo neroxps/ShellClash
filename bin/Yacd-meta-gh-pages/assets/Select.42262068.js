@@ -1,0 +1,1 @@
+import{j as c}from"./index.d06708ba.js";const o="_select_gfkcv_1",r={select:o};function i({options:s,selected:t,onChange:l}){return c("select",{className:r.select,value:t,onChange:l,children:s.map(([e,n])=>c("option",{value:e,children:n},e))})}export{i as S};
