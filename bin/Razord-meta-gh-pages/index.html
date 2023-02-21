@@ -15,13 +15,27 @@
     <meta name="description" content="Clash web port"/>
     <!--meta name="external-controller" content="http://secret@example.com:9090"-->
     <title>Clash</title>
-  <script type="module" crossorigin src="./assets/index.48070dcd.js"></script>
+  <script type="module" crossorigin src="./assets/index.628acf3b.js"></script>
   <link rel="modulepreload" href="./assets/vendor.356502e2.js">
   <link rel="stylesheet" href="./assets/index.d7f07683.css">
 <link rel="manifest" href="./manifest.webmanifest"><script>if('serviceWorker' in navigator) {window.addEventListener('load', () => {navigator.serviceWorker.register('./sw.js', { scope: './' })})}</script></head>
 <body>
 <noscript>You need to enable JavaScript to run this app.</noscript>
 <div id="root"></div>
+<script>
+    const urlSearchParams = new URLSearchParams(window.location.search);
+    const { host, port, secret, protocol } = Object.fromEntries(
+        urlSearchParams.entries()
+    );
+    if (host && port) {
+        const meta = document.createElement("meta");
+        meta.name = "external-controller";
+        meta.content = `${protocol || window.location.protocol}//${
+            secret || ""
+        }@${host}:${port}`;
+        document.getElementsByTagName("head")[0].appendChild(meta);
+    }
+</script>
 
 </body>
 </html>
